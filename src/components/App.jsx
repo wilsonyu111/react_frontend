@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Room from "./Room";
-import info from "../info";
 
-function createRoom(info) {
+function createRoom(info, keyValue) {
   if (info.size === 0) {
-    return <h1 className="loading_data"> loading data... </h1>;
+    return <h1 key={keyValue} className="loading_data"> loading data... </h1>;
   } else {
+    const [temperature, hudmidity, lastActive, location] = Object.values(info);
+
     return (
       <Room
-        key={info.id}
-        roomId={info.id}
-        temp={info.temp}
-        hub={info.hub}
-        last_active={info.last_active}
+        key={location}
+        roomId={location}
+        temp={temperature}
+        hud={hudmidity}
+        last_active={lastActive}
       />
     );
   }
@@ -21,10 +22,10 @@ function createRoom(info) {
 function createRoomHelper(dataList) {
   let compList = [];
   if (dataList.length === 0) {
-    compList.push(createRoom(new Map()));
+    compList.push(createRoom(new Map(), 0));
   } else {
     dataList.forEach((item, index) => {
-      compList.push(createRoom(item));
+      compList.push(createRoom(item, index));
     });
   }
   return compList;
@@ -32,13 +33,7 @@ function createRoomHelper(dataList) {
 
 function App() {
   const [roomData, updateRoomVal] = useState([]);
-  console.log("running");
 
-  // useEffect(() => {
-  //   // Update the document title using the browser API
-  //   console.log("use effect running");
-  //   updatePageValue();
-  // });
   function updatePageValue() {
     const request = new XMLHttpRequest();
     console.log("sending request");
@@ -52,11 +47,10 @@ function App() {
         dataMap.forEach((value, key) => {
           dataList.push(value);
         });
-        console.log(dataList);
         updateRoomVal(dataList);
       }
     });
-    request.open("GET", "http://192.168.1.236:5000/getData", true);
+    request.open("GET", "http://192.168.1.241:5000/getData", true);
     request.send();
     return dataList;
   }
@@ -64,8 +58,9 @@ function App() {
   return (
     <div className="info">
       <h1 className="heading">Petaluma</h1>
+      <button onClick={updatePageValue}> refresh</button>
       {createRoomHelper(roomData)}
-      <h2 onClick={updatePageValue}> refresh </h2>
+
     </div>
   );
   //  send get request to flask
