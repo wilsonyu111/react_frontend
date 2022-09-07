@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Room from "./Room";
 
+let rendered = false;
+let initialRequest = -1;
+
 function createRoom(info, keyValue) {
   if (info.size === 0) {
-    return <h1 key={keyValue} className="loading_data"> loading data... </h1>;
+    return (
+      <h1 key={keyValue} className="loading_data">
+        {" "}
+        loading data...{" "}
+      </h1>
+    );
   } else {
     const [temperature, hudmidity, lastActive, location] = Object.values(info);
 
@@ -34,6 +42,15 @@ function createRoomHelper(dataList) {
 function App() {
   const [roomData, updateRoomVal] = useState([]);
 
+  const startInterval = setInterval(function () {
+    console.log(rendered, initialRequest);
+    if (!rendered && initialRequest === -1) {
+      updatePageValue();
+    } else if (rendered && initialRequest === 4) {
+      clearInterval(startInterval);
+    }
+  }, 1000);
+
   function updatePageValue() {
     const request = new XMLHttpRequest();
     console.log("sending request");
@@ -48,10 +65,13 @@ function App() {
           dataList.push(value);
         });
         updateRoomVal(dataList);
+        rendered = true;
+        initialRequest = request.readyState;
       }
     });
-    request.open("GET", "http://192.168.1.241:5000/getData", true);
+    request.open("GET", "http://192.168.1.236:5000/getData", true);
     request.send();
+    initialRequest = request.readyState;
     return dataList;
   }
 
@@ -60,7 +80,6 @@ function App() {
       <h1 className="heading">Petaluma</h1>
       <button onClick={updatePageValue}> refresh</button>
       {createRoomHelper(roomData)}
-
     </div>
   );
   //  send get request to flask
