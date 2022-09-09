@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Room from "./Room";
 
 let rendered = false;
@@ -69,7 +69,7 @@ function App() {
         initialRequest = request.readyState;
       }
     });
-    request.open("GET", "http://192.168.1.236:5000/getData", true);
+    request.open("GET", "/getData", true);
     request.send();
     initialRequest = request.readyState;
     return dataList;

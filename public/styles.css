@@ -1,18 +1,19 @@
 
 body {
-    background: #eee;
+    background: #736b6b;
     background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
     padding: 0 16px;
   }
   
 .box {
-    background: #fff;
+    background: #3C415C;
     border-radius: 7px;
-    box-shadow: 0 2px 5px #ccc;
+    /* box-shadow: 0 2px 5px #ccc; */
     padding: 10px;
-    width: 240px;
+    width: 270px;
     margin: 16px;
     float: left;
+    display: flex;
   }
 
   .info {
@@ -24,8 +25,12 @@ body {
 }
 
   .icon-img{
-    border-radius: 70%;
-    /* border: 7px solid #1d7c7c; */
+    /* border-radius: %;
+    border: 7px solid #1d7c7c; */
     width: 100px;
     height: 100px;
+  }
+
+  h1, h2, p{
+    color: #B4A5A5;
   }
