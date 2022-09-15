@@ -34,3 +34,17 @@ body {
   h1, h2, p{
     color: #B4A5A5;
   }
+
+  .homePage, .loginPage
+  {
+    text-decoration: none;
+    color: #3C415C;
+    width: 100px;
+    height: 20px;
+  }
+  .navBar
+  {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
