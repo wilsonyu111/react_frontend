@@ -1,24 +1,51 @@
 import React from "react";
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
+import Message from "./message";
+
+// function for checking if the session token exist
+// if it exist the user has logged in
+// redirect user to dashboard page
+let wrongPass = false;
+let loggedIn = false;
+let initialRequest = -1;
+
+function extractSessionCookie() {
+  let token = "";
+  let cookieList = document.cookie.split(";");
+  if (cookieList !== undefined) {
+    cookieList.forEach((coookie) => {
+      if (coookie.indexOf("sessionID=") > -1) {
+        token = coookie.substring(coookie.indexOf("sessionID=") + 10);
+        return;
+      }
+    });
+  }
+  return token;
+}
 
 function Login() {
-  let wrongPass = false;
-  let loggedIn = false;
-  let initialRequest = -1;
+  console.log("login page");
+
   const loginMessage = "logging in ...";
   const [loginState, updateLoginState] = useState(<LoginComp />);
+  let sessionToken = extractSessionCookie();
 
-  function Message(props) {
-    return <div>{props.message}</div>;
+  if (sessionToken !== "") {
+    return <Navigate replace to="/" />;
   }
 
+  // this function checks to see if the user has entered the corerct password
+  // when the server returns 200 and token
+  // if the user has entered the password correctly
+  // it will navigate the use to the dashboard
   function triedLogin() {
     if (wrongPass === true) {
-      return <h2>"invalid username or password"</h2>;
+      return <Message msg={"incorrect username or password"} />;
     } else if (loggedIn) {
-      return <h2>"log in successful!"</h2>;
+      return <Message msg={"log in successful!"} />;
     }
-    return <h2></h2>;
+    return <></>;
   }
 
   function LoginComp() {
@@ -33,12 +60,13 @@ function Login() {
     }
 
     function sendCredential() {
-      updateLoginState(<Message name={loginMessage} />);
+      updateLoginState(<Message msg={loginMessage} />);
 
       const startInterval = setInterval(function () {
         if (initialRequest === 4) {
-          console.log("waiting for login update");
+          sessionToken = extractSessionCookie();
           updateLoginState(<LoginComp />);
+
           initialRequest = -1;
           clearInterval(startInterval);
         }
@@ -54,18 +82,22 @@ function Login() {
             wrongPass = true;
           } else if (request.status === 500) {
             console.log("server error, please try again later");
-          } else {
+          } else if (request.status === 200) {
             loggedIn = true;
+          } else {
+            console.log("status code: " + request.status);
           }
 
           initialRequest = request.readyState;
         }
       });
+
       const jsonData = {
         username: username,
         password: password,
       };
-      request.open("POST", "http://192.168.1.236:5000/login", true);
+
+      request.open("POST", "/login", true);
       request.setRequestHeader("Content-Type", "application/json");
       console.log(JSON.stringify(jsonData));
       request.send(JSON.stringify(jsonData));

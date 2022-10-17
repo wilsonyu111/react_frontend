@@ -1,49 +1,48 @@
 import React, { useState } from "react";
 import Room from "./Room";
+import Message from "./message";
 
 let rendered = false;
 let initialRequest = -1;
+let storedData = [];
 
 function createRoom(info, keyValue) {
   if (info.size === 0) {
-    return (
-      <h1 key={keyValue} className="loading_data">
-        {" "}
-        loading data...{" "}
-      </h1>
-    );
+    return <Message key={keyValue} msg={"loading data..."} />;
   } else {
-    const [temperature, hudmidity, lastActive, location] = Object.values(info);
+    const [temperature, hudmidity, lastActive, lightStatus, location, macadd] =
+      Object.values(info);
 
     return (
       <Room
-        key={location}
+        key={keyValue}
         roomId={location}
         temp={temperature}
         hud={hudmidity}
-        last_active={lastActive}
+        lastActive={lastActive}
+        lightStatus={lightStatus}
+        sensorID={macadd}
       />
     );
   }
 }
 
 function createRoomHelper(dataList) {
-  let compList = [];
+  const compList = [];
   if (dataList.length === 0) {
     compList.push(createRoom(new Map(), 0));
   } else {
-    dataList.forEach((item, index) => {
-      compList.push(createRoom(item, index));
+    dataList.forEach((items, index) => {
+      compList.push(createRoom(items, index));
     });
   }
   return compList;
 }
 
 function App() {
-  const [roomData, updateRoomVal] = useState([]);
-
+  const [roomData, updateRoomVal] = useState(storedData); // for storing map object
   const startInterval = setInterval(function () {
-    console.log(rendered, initialRequest);
+    // console.log(rendered, initialRequest);
     if (!rendered && initialRequest === -1) {
       updatePageValue();
     } else if (rendered && initialRequest === 4) {
@@ -54,7 +53,7 @@ function App() {
   function updatePageValue() {
     const request = new XMLHttpRequest();
     console.log("sending request");
-    let dataList = [];
+    const dataList = [];
     request.addEventListener("readystatechange", () => {
       // in async request, ready state 4 is when the request is fully done
       // look at xml readystatechange for what each code means
@@ -62,14 +61,16 @@ function App() {
         const data = request.responseText;
         const dataMap = new Map(Object.entries(JSON.parse(data)));
         dataMap.forEach((value, key) => {
+          value.mac_address = key;
           dataList.push(value);
         });
         updateRoomVal(dataList);
+        storedData = dataList;
         rendered = true;
         initialRequest = request.readyState;
       }
     });
-    request.open("GET", "/getData", true);
+    request.open("GET", "http://192.168.1.236:5000/getData", true);
     request.send();
     initialRequest = request.readyState;
     return dataList;

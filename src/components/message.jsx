@@ -1,7 +1,11 @@
 import React from "react";
 
-function loggingIn(props) {
-  return <div>{props.text}</div>;
+function Msg(props) {
+  return (
+    <div className="messageBox">
+      <h2>{props.msg}</h2>
+    </div>
+  );
 }
 
-export default loggingIn;
+export default Msg;
