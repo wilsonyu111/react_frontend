@@ -70,7 +70,7 @@ function App() {
         initialRequest = request.readyState;
       }
     });
-    request.open("GET", "http://192.168.1.236:5000/getData", true);
+    request.open("GET", "/getData", true);
     request.send();
     initialRequest = request.readyState;
     return dataList;

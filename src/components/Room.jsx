@@ -29,7 +29,7 @@ function Room(props) {
       }
     });
 
-    request.open("POST", "http://192.168.1.236:5000/sensorConfig", true);
+    request.open("POST", "/sensorConfig", true);
     const jsonBody = JSON.stringify({ MAC_ADDRESS: props.sensorID });
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(jsonBody);
