@@ -22,7 +22,6 @@ function extractSessionCookie() {
 
 function User() {
   let sessionToken = extractSessionCookie(); //commented out for testing logged in
-  // let sessionToken = "1234";
   const location = useLocation();
 
   if (sessionToken === "") {

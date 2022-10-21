@@ -6,9 +6,6 @@ import Message from "./message";
 // function for checking if the session token exist
 // if it exist the user has logged in
 // redirect user to dashboard page
-let wrongPass = false;
-let loggedIn = false;
-let initialRequest = -1;
 
 function extractSessionCookie() {
   let token = "";
@@ -29,7 +26,7 @@ function Login() {
 
   const loginMessage = "logging in ...";
   const [loginState, updateLoginState] = useState(<LoginComp />);
-  let sessionToken = extractSessionCookie();
+  const [sessionToken, updateSessionToken] = useState(extractSessionCookie());
 
   if (sessionToken !== "") {
     return <Navigate replace to="/" />;
@@ -39,18 +36,21 @@ function Login() {
   // when the server returns 200 and token
   // if the user has entered the password correctly
   // it will navigate the use to the dashboard
-  function triedLogin() {
-    if (wrongPass === true) {
-      return <Message msg={"incorrect username or password"} />;
-    } else if (loggedIn) {
-      return <Message msg={"log in successful!"} />;
+  function triedLogin(customMsg = "") {
+    if (customMsg === "") {
+      return <></>;
     }
-    return <></>;
+    return (
+      <>
+        <Message msg={customMsg} />
+      </>
+    );
   }
 
-  function LoginComp() {
+  function LoginComp(props) {
     const [password, setPassword] = useState("");
     const [username, setusername] = useState("");
+
     function updateName(event) {
       setusername(event.target.value);
     }
@@ -60,18 +60,6 @@ function Login() {
     }
 
     function sendCredential() {
-      updateLoginState(<Message msg={loginMessage} />);
-
-      const startInterval = setInterval(function () {
-        if (initialRequest === 4) {
-          sessionToken = extractSessionCookie();
-          updateLoginState(<LoginComp />);
-
-          initialRequest = -1;
-          clearInterval(startInterval);
-        }
-      }, 500);
-
       const request = new XMLHttpRequest();
       console.log("sending logging request");
       request.addEventListener("readystatechange", () => {
@@ -79,16 +67,17 @@ function Login() {
         // look at xml readystatechange for what each code means
         if (request.readyState === 4) {
           if (request.status === 401 || request.status === 400) {
-            wrongPass = true;
-          } else if (request.status === 500) {
-            console.log("server error, please try again later");
+            updateLoginState(
+              <LoginComp loginMsg={"wrong username/password"} />
+            );
           } else if (request.status === 200) {
-            loggedIn = true;
+            updateSessionToken(extractSessionCookie());
+            updateLoginState(<LoginComp loginMsg={"login sucessful"} />);
           } else {
-            console.log("status code: " + request.status);
+            updateLoginState(
+              <LoginComp loginMsg={"login error, please try again later "} />
+            );
           }
-
-          initialRequest = request.readyState;
         }
       });
 
@@ -99,39 +88,44 @@ function Login() {
 
       request.open("POST", "/login", true);
       request.setRequestHeader("Content-Type", "application/json");
-      console.log(JSON.stringify(jsonData));
       request.send(JSON.stringify(jsonData));
-      initialRequest = request.readyState;
+      updateLoginState(<Message msg={loginMessage} />);
     }
 
     return (
       <div className="loginDiv">
-        <h1 className="heading">Login Page</h1>
-        {triedLogin()}
+        {triedLogin(props.loginMsg)}
 
         <form className="loginBox">
           <label>
-            login:{" "}
-            <input
-              type="text"
-              name="username"
-              className="username"
-              value={username}
-              onChange={updateName}
-            />{" "}
+            <div className="usernameSec">
+              <input
+                type="text"
+                name="username"
+                className="username"
+                value={username}
+                onChange={updateName}
+                placeholder="username"
+              />
+            </div>
           </label>
           <label>
-            password:{" "}
-            <input
-              type="password"
-              name="password"
-              className="password"
-              value={password}
-              onChange={updatePass}
-            />{" "}
+            <div className="passwordSec">
+              <input
+                type="password"
+                name="password"
+                className="password"
+                placeholder="password"
+                value={password}
+                onChange={updatePass}
+              />
+            </div>
           </label>
         </form>
-        <button onClick={sendCredential}> login </button>
+        <button onClick={sendCredential} className="loginButton">
+          {" "}
+          login{" "}
+        </button>
       </div>
     );
   }

@@ -78,8 +78,10 @@ function App() {
 
   return (
     <div className="info">
-      <h1 className="heading">Petaluma</h1>
-      <button onClick={updatePageValue}> refresh</button>
+      <button className="refreshBtn" onClick={updatePageValue}>
+        {" "}
+        refresh
+      </button>
       {createRoomHelper(roomData)}
     </div>
   );

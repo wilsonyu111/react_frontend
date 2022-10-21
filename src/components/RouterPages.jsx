@@ -12,13 +12,16 @@ function PageRouter() {
       <CookiesProvider>
         <BrowserRouter>
           <nav className="navBar">
+            <h1 className="heading">Maria Sensor</h1>
             <Link to="/" className="homePage">
-              Home
+              <h3 className="homeBtn">Home</h3>
             </Link>
             <Link to="/login" className="loginPage">
-              login
+              <h3 className="loginBtn">login</h3>
             </Link>
           </nav>
+          <div className="divider">""</div>
+
           <Routes>
             <Route path="/" element={<App state={true} />} />
             <Route path="/dashboard" element={<Portal state={true} />} />

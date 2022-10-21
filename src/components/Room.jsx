@@ -29,7 +29,7 @@ function Room(props) {
       }
     });
 
-    request.open("POST", "http://192.168.1.236:5000/testSensorConfig", true);
+    request.open("POST", "http://192.168.1.236:5000/sensorConfig", true);
     const jsonBody = JSON.stringify({ MAC_ADDRESS: props.sensorID });
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(jsonBody);
@@ -46,20 +46,23 @@ function Room(props) {
 
   return (
     <div className="room">
-      <button className="configPage" onClick={updatePageValue}>
-        {" "}
-        config
-      </button>
-      <h2>room {props.roomId}</h2>
-      {loadingMessage()}
-      <Box img="/img/temp.png" name="temperature" data={props.temp} />
-      <Box img="/img/water-drop.png" name="hudmidity" data={props.hud} />
-      <Box img="/img/future.png" name="last active" data={props.lastActive} />
-      <Box
-        img="/img/light-bulb.png"
-        name="light status"
-        data={props.lightStatus}
-      />
+      <div className="roomTitle">room {props.roomId}</div>
+      <div className="roomNavbar">
+        <button className="configBtn" onClick={updatePageValue}>
+          config
+        </button>
+        <div className="loadingBox">{loadingMessage()}</div>
+      </div>
+      <div className="roomDataSection">
+        <Box img="/img/temp.png" name="temperature" data={props.temp} />
+        <Box img="/img/water-drop.png" name="hudmidity" data={props.hud} />
+        <Box img="/img/future.png" name="last active" data={props.lastActive} />
+        <Box
+          img="/img/light-bulb.png"
+          name="light status"
+          data={props.lightStatus}
+        />
+      </div>
     </div>
   );
 }
