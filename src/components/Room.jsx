@@ -1,14 +1,7 @@
 import { React, useState } from "react";
 import Box from "./Box";
 import Message from "./message";
-import {
-  Link,
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Room(props) {
   let clicked = false;
@@ -29,8 +22,11 @@ function Room(props) {
       }
     });
 
-    request.open("POST", "/sensorConfig", true);
-    const jsonBody = JSON.stringify({ MAC_ADDRESS: props.sensorID });
+    request.open("POST", "/checkAction", true);
+    const jsonBody = JSON.stringify({
+      MAC_ADDRESS: props.sensorID,
+      action: "check_stat",
+    });
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(jsonBody);
     updateClicked(true);

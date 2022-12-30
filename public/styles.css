@@ -74,6 +74,14 @@
     
   }
 
+  .window
+  {
+    text-align: center;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+  }
+
 
   .heading
   {
@@ -84,7 +92,7 @@
     /* offset-position: ; */
   }
 
-  .refreshBtn, .configBtn
+  .refreshBtn, .configBtn, .editButton, .cancelButton, .submitButton
   {
     text-align: center;
     text-decoration: none;
@@ -140,7 +148,8 @@
 
 
     .refreshBtn,
-    .configBtn {
+    .configBtn, .editButton, .cancelButton,
+    .submitButton {
     align-items: center;
     background-color: transparent;
     border: 2px solid #ECB365;
@@ -178,7 +187,8 @@
   } */
 
     .refreshBtn:active,
-    .configBtn:active {
+    .configBtn:active, .editButton:active .cancelButton:active,
+    .submitButton:active{
     background-color: #F0F0F1;
     border-color: rgba(0, 0, 0, 0.15);
     box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
@@ -191,7 +201,7 @@
   /* login css */
 
 
-    .loginDiv {
+    .loginDiv, .editWindow{
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -207,7 +217,7 @@
     }
   
     /* form Container */
-    .loginBox {
+    .loginBox, .editWindow {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -224,7 +234,7 @@
     }
   
 
-    .username, .password{
+    .username, .password, .sleepTimerDiv, .destPortDiv, .locationNameDiv, .installedLightDiv{
       width: 280px;
       height: 30px;
   

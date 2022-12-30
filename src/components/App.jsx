@@ -4,11 +4,13 @@ import Message from "./message";
 
 let rendered = false;
 let initialRequest = -1;
-let storedData = [];
+function LoadingMessage() {
+  return <Message key="loading" msg={"loading data..."} />;
+}
 
 function createRoom(info, keyValue) {
   if (info.size === 0) {
-    return <Message key={keyValue} msg={"loading data..."} />;
+    return <Message key="noData" msg={"server has no data, try again later"} />;
   } else {
     const [temperature, hudmidity, lastActive, lightStatus, location, macadd] =
       Object.values(info);
@@ -40,9 +42,8 @@ function createRoomHelper(dataList) {
 }
 
 function App() {
-  const [roomData, updateRoomVal] = useState(storedData); // for storing map object
+  const [displaydata, updateDisplay] = useState(<LoadingMessage />);
   const startInterval = setInterval(function () {
-    // console.log(rendered, initialRequest);
     if (!rendered && initialRequest === -1) {
       updatePageValue();
     } else if (rendered && initialRequest === 4) {
@@ -51,6 +52,7 @@ function App() {
   }, 1000);
 
   function updatePageValue() {
+    updateDisplay(<LoadingMessage />);
     const request = new XMLHttpRequest();
     console.log("sending request");
     const dataList = [];
@@ -58,36 +60,42 @@ function App() {
       // in async request, ready state 4 is when the request is fully done
       // look at xml readystatechange for what each code means
       if (request.readyState === 4) {
-        const data = request.responseText;
-        const dataMap = new Map(Object.entries(JSON.parse(data)));
-        dataMap.forEach((value, key) => {
-          value.mac_address = key;
-          dataList.push(value);
-        });
-        updateRoomVal(dataList);
-        storedData = dataList;
+        console.log(request.status);
+        if (request.status === 200) {
+          const data = request.responseText;
+          const dataMap = new Map(Object.entries(JSON.parse(data)));
+          dataMap.forEach((value, key) => {
+            value.mac_address = key;
+            dataList.push(value);
+          });
+          updateDisplay(createRoomHelper(dataList));
+        } else {
+          updateDisplay(
+            <Message
+              key="errorLoading"
+              msg={"unable to fetch data, refresh or try again later"}
+            />
+          );
+        }
+
         rendered = true;
         initialRequest = request.readyState;
       }
     });
     request.open("GET", "/getData", true);
+    // request.open("GET", "/getData", true);
     request.send();
     initialRequest = request.readyState;
     return dataList;
   }
-
   return (
     <div className="info">
       <button className="refreshBtn" onClick={updatePageValue}>
         {" "}
         refresh
       </button>
-      {createRoomHelper(roomData)}
+      {displaydata}
     </div>
   );
-  //  send get request to flask
-  // get json, parse json into hashmap
-  // loop through hashmap
-  // for each loop to create room
 }
 export default App;

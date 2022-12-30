@@ -2,24 +2,11 @@ import React from "react";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import Message from "./message";
+import { extractSessionCookie } from "./cookieFunctions";
 
 // function for checking if the session token exist
 // if it exist the user has logged in
 // redirect user to dashboard page
-
-function extractSessionCookie() {
-  let token = "";
-  let cookieList = document.cookie.split(";");
-  if (cookieList !== undefined) {
-    cookieList.forEach((coookie) => {
-      if (coookie.indexOf("sessionID=") > -1) {
-        token = coookie.substring(coookie.indexOf("sessionID=") + 10);
-        return;
-      }
-    });
-  }
-  return token;
-}
 
 function Login() {
   console.log("login page");
